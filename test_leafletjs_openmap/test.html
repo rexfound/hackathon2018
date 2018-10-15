@@ -17,7 +17,7 @@
    crossorigin=""></script>
     <div id="mapid"></div>
     <!--The div element for the map -->
-  <script src="test.js" type="text/javascript"></script>
+  <script src="vancouver.js" type="text/javascript"></script>
     <script>
   var mAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>';
   var mUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}';
@@ -29,12 +29,16 @@
   
   var pacificOcean = L.layerGroup();
   L.marker([49.2827, -143.1207]).bindPopup('hi').addTo(pacificOcean);
+  
+  var geoJson = L.geoJSON();
+  geoJson.addData(vanData);
   /*End of sample layergroup */
   
   /*Adding the layerGroup here allows the user to control what shows up on the overlay*/
   var overlays = {
     "Cities": cities,
-    "Pacific" : pacificOcean
+    "Pacific" : pacificOcean,
+    "Geo" : geoJson
   };
   
   var baseLayer = L.tileLayer(mUrl, {
@@ -75,7 +79,7 @@
   };*/
 
   /*L.geoJSON(vancouverData).addTo(mymap);*/
-  console.log(vancouverData);
+  //console.log(vancouverData);
   L.control.layers(null,overlays).addTo(mymap);
     </script>
   </body>
