@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <style>
-       /* Set the size of the div element that contains the map */
-    #mapid {height:98vh; width:100%}
+    body {margin:0px;padding:0px;}
+    #mapid {height:100vh; width:100vw; display:block;}
     </style>
    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
    integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
@@ -58,7 +58,6 @@
     accessToken: 'pk.eyJ1IjoiemVoYWNrcyIsImEiOiJjam42bjh2OGIwbDFzM3dwaTh3N3NtNWRqIn0.yapaCg5pOEkYkPiskIszyQ'
   });
 
-  
   var mapConfig = {
     center: [49.2827, -123.1207],
     zoom: 10,
