@@ -32,7 +32,8 @@
     <script>
   var mAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>';
   var mUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}';
-
+  var _APP_ID = '17556070bfb60252ba8bcd48fc9408d5';
+  
   function getColor(cartodb_id) {
     return cartodb_id % 2 == 0 ? '#800026' : '#BD0026';
   }
@@ -69,6 +70,19 @@
   var timeline = L.timeline(vanData);
 
   var lakeJson = L.geoJSON(testJson);
+
+  var clouds = L.OWM.clouds({appId: _APP_ID});
+  var cloudscls = L.OWM.cloudsClassic({appId: _APP_ID});
+  var precipitation = L.OWM.precipitation({appId: _APP_ID});
+  var precipitationcls = L.OWM.precipitationClassic({appId: _APP_ID});
+  var rain = L.OWM.rain({appId: _APP_ID});
+  var raincls = L.OWM.rainClassic({appId: _APP_ID});
+  var snow = L.OWM.snow({appId: _APP_ID});
+  var pressure = L.OWM.pressure({appId: _APP_ID});
+  var pressurecntr = L.OWM.pressureContour({appId: _APP_ID});
+  var temp = L.OWM.temperature({appId: _APP_ID});
+  var wind = L.OWM.wind({appId: _APP_ID});
+
   /*End of sample layergroup */
   
   /*Adding the layerGroup here allows the user to control what shows up on the overlay*/
@@ -76,7 +90,13 @@
     "Cities": cities,
     "Geo": geoJson,
     "Timeline":timeline,
-    "Lakes": lakeJson
+    "Lakes": lakeJson,
+    "Clouds": clouds,
+    "Precipitation": precipitation,
+    "Rain": rain,
+    "Pressure": pressurecntr,
+    "Temperature": temp,
+    "Wind": wind
   };
   
   // add more layers here
@@ -90,7 +110,6 @@
   var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 18, attribution: '[wah!]' });
 
-  var clouds = L.OWM.clouds({showLegend: false, opacity: 0.5, appId: '17556070bfb60252ba8bcd48fc9408d5'});
 
 //  var city = L.OWM.current({intervall: 15, lang: 'de',
   //      markerFunction: myOwmMarker, popupFunction: myOwmPopup});
@@ -100,7 +119,7 @@
   var mapConfig = {
     center: [49.2827, -123.1207],
     zoom: 10,
-    layers: [osm,geoJson,timeline]
+    layers: [baseLayer,timeline]
   };
 
   var mymap = L.map('mapid', mapConfig);
@@ -116,8 +135,8 @@
   timelineControl.addTimelines(timeline);
 
   var baseLayers = {
-    "Basic": baseLayer,
-    "OpenWeatherMap": osm
+    "Grey Basic": baseLayer,
+    "OSM Basic": osm
   };
 
   /*L.geoJSON(vancouverData).addTo(mymap);*/
