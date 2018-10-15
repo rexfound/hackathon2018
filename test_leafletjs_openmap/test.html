@@ -3,7 +3,7 @@
   <head>
     <style>
        /* Set the size of the div element that contains the map */
-	  #mapid {height:400px; width:600px}
+	  #mapid {height:98vh; width:100%}
     </style>
 	 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
    integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
@@ -19,14 +19,17 @@
 	
     <script>
 	var mymap = L.map('mapid').setView([49.2827, -123.1207], 10);
-	
-	L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+  var mAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';
+	var mUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}';
+  
+  var baseLayer = {
+    attribution: mAttr,
     maxZoom: 18,
     id: 'mapbox.light',
     accessToken: 'pk.eyJ1IjoiemVoYWNrcyIsImEiOiJjam42bjh2OGIwbDFzM3dwaTh3N3NtNWRqIn0.yapaCg5pOEkYkPiskIszyQ'
-}).addTo(mymap);
-// Initialize and add the map
+  };
+
+	L.tileLayer(mUrl, baseLayer).addTo(mymap);
     </script>
   </body>
 </html>
