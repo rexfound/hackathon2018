@@ -21,9 +21,8 @@
     <script>
   var mAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>';
 	var mUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}';
-  
+
   /* To add new layers, create a layerGroup as follows*/
-  
   /*sample layer groups*/
   var cities = L.layerGroup();
   L.marker([49.2827, -123.1207]).bindPopup('hi').addTo(cities);
@@ -48,19 +47,20 @@
   var mapConfig = {
     center: [49.2827, -123.1207],
     zoom: 10,
-    layers: [baseLayer, cities]
+    layers: [baseLayer]
   };
   
 	var mymap = L.map('mapid', mapConfig);
-
-  /*This can be used to add more base layer (differnt types of map) */
-  /*var baseLayers = {'base':baseLayer};*/
-
-  /*the first param seems to be control for select-one-only layers, second param for checkbox layers*/
-  L.control.layers(null,overlays).addTo(mymap);
   
+  /* controls
+  var baseLayers = {
+		"Grayscale": grayscale,
+		"Streets": streets
+	};*/
+
 	/*L.geoJSON(vancouverData).addTo(mymap);*/
   console.log(vancouverData);
+	L.control.layers(null,overlays).addTo(mymap);
     </script>
   </body>
 </html>
