@@ -21,6 +21,8 @@
      crossorigin=""></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js"></script>
     <script src="javascripts/leaflet.timeline.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/leaflet-openweathermap.css" />
+    <script type="text/javascript" src="javascripts/leaflet-openweathermap.js"></script>
   </head>
   <body>
     <div id="mapid"></div>
@@ -74,21 +76,31 @@
     "Cities": cities,
     "Geo": geoJson,
     "Timeline":timeline,
-	"Lakes": lakeJson
+    "Lakes": lakeJson
   };
   
+  // add more layers here
   var baseLayer = L.tileLayer(mUrl, {
     attribution: mAttr,
     maxZoom: 18,
     id: 'mapbox.light',
     accessToken: 'pk.eyJ1IjoiemVoYWNrcyIsImEiOiJjam42bjh2OGIwbDFzM3dwaTh3N3NtNWRqIn0.yapaCg5pOEkYkPiskIszyQ'
   });
+  
+  var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18, attribution: '[wah!]' });
 
+  var clouds = L.OWM.clouds({showLegend: false, opacity: 0.5, appId: '17556070bfb60252ba8bcd48fc9408d5'});
+
+//  var city = L.OWM.current({intervall: 15, lang: 'de',
+  //      markerFunction: myOwmMarker, popupFunction: myOwmPopup});
+  //var openWeatherLayer = L
+
+  
   var mapConfig = {
     center: [49.2827, -123.1207],
     zoom: 10,
-    layers: [baseLayer,geoJson,timeline]
-    
+    layers: [osm,geoJson,timeline]
   };
 
   var mymap = L.map('mapid', mapConfig);
@@ -102,15 +114,16 @@
 
   timelineControl.addTo(mymap);
   timelineControl.addTimelines(timeline);
-  /* controls
+
   var baseLayers = {
-    "Grayscale": grayscale,
-    "Streets": streets
-  };*/
+    "Basic": baseLayer,
+    "OpenWeatherMap": osm
+  };
 
   /*L.geoJSON(vancouverData).addTo(mymap);*/
   //console.log(vancouverData);
-  L.control.layers(null,overlays).addTo(mymap);
+  L.control.layers(baseLayers,overlays).addTo(mymap);
+
     </script>
   </body>
 </html>
