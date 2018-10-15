@@ -88,7 +88,14 @@ public class HomeController {
                         document = new Document();
                     }
                     else if (FIELD_MAP.containsKey(fieldName)) {
-                        document.put(FIELD_MAP.get(fieldName), parser.getValueAsString());
+                        String column = FIELD_MAP.get(fieldName);
+                        if (column.contains("TEMP")) {
+                            Double kelvin = Double.parseDouble(parser.getValueAsString());
+                            document.put(column, kelvin -  273.15);
+                        }
+                        else {
+                            document.put(column, parser.getValueAsString());
+                        }
                     }
                 }
             }
