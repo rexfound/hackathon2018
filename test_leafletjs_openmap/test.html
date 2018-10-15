@@ -22,11 +22,20 @@
   var mAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>';
 	var mUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}';
   
+  /* To add new layers, create a layerGroup as follows*/
+  
+  /*sample layer groups*/
   var cities = L.layerGroup();
   L.marker([49.2827, -123.1207]).bindPopup('hi').addTo(cities);
   
+  var pacificOcean = L.layerGroup();
+  L.marker([49.2827, -143.1207]).bindPopup('hi').addTo(pacificOcean);
+  /*End of sample layergroup */
+  
+  /*Adding the layerGroup here allows the user to control what shows up on the overlay*/
   var overlays = {
-		"Cities": cities
+		"Cities": cities,
+    "Pacific" : pacificOcean
 	};
   
   var baseLayer = L.tileLayer(mUrl, {
