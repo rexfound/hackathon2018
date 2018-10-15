@@ -83,18 +83,19 @@
   var mapConfig = {
     center: [49.2827, -123.1207],
     zoom: 10,
-    layers: [baseLayer,geoJson]
+    layers: [baseLayer,geoJson,timeline]
+    
   };
-  
+
   var mymap = L.map('mapid', mapConfig);
-  
+
   var timelineControl = L.timelineSliderControl({
     formatOutput: function(date){
       return moment(date).format("YYYY-MM-DD");
     },
     enableKeyboardControls: true
   });
-  timeline.addTo(mymap);
+
   timelineControl.addTo(mymap);
   timelineControl.addTimelines(timeline);
   /* controls
