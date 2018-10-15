@@ -44,6 +44,23 @@
     accessToken: 'pk.eyJ1IjoiemVoYWNrcyIsImEiOiJjam42bjh2OGIwbDFzM3dwaTh3N3NtNWRqIn0.yapaCg5pOEkYkPiskIszyQ'
   });
 
+  function getColor(cartodb_id) {
+    return cartodb_id % 2 = 0 ? '#800026' :
+				cartodb_id % 2 != 0  ? '#BD0026';
+  }
+
+  function style(feature) {
+		return {
+			weight: 2,
+			opacity: 1,
+			color: 'white',
+			dashArray: '3',
+			fillOpacity: 0.7,
+			fillColor: getColor(feature.properties.cartodb_id)
+		};
+	}
+
+
   var mapConfig = {
     center: [49.2827, -123.1207],
     zoom: 10,
