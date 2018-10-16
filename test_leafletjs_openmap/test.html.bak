@@ -95,32 +95,7 @@
 
   /*End of sample layergroup */
   
-  /*Some hardcoded testing data for heatmap*/
-   var testData = {
-   max: 10,
-   data: [{lat: 49.056801, lng: -122.285042, count: 141397},{lat: 49.2488, lng: -122.9805, count: 232755},{lat: 49.2628, lng: -122.7811, count: 139284},
-   {lat: 49.0952, lng: -123.0265, count: 102238},{lat: 49.2827, lng: -123.1207, count: 631486},{lat: 49.166592, lng: -123.133568, count: 198309}, {lat: 49.1913, lng: -122.8490, count: 517887}]
-   };
-
-  var cfg = {
-  // radius should be small ONLY if scaleRadius is true (or small radius is intended)
-  // if scaleRadius is false it will be the constant radius used in pixels
-  "radius": 0.1,
-  "maxOpacity": .5, 
-  // scales the radius based on map zoom
-  "scaleRadius": true, 
-  // if set to false the heatmap uses the global maximum for colorization
-  // if activated: uses the data maximum within the current map boundaries 
-  //   (there will always be a red spot with useLocalExtremas true)
-  "useLocalExtrema": true,
-  // which field name in your data represents the latitude - default "lat"
-  latField: 'lat',
-  // which field name in your data represents the longitude - default "lng"
-  lngField: 'lng',
-  // which field name in your data represents the data value - default "value"
-  valueField: 'count'
-  };
-   var heatmapLayer = new HeatmapOverlay(cfg);
+ 
 
   // add more layers here
   var baseLayer = L.tileLayer(mUrl, {

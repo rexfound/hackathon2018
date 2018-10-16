@@ -1,5 +1,7 @@
 package com.ze.hackathon.Hackathon2018.service;
 
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import com.mongodb.DBCursor;
 import com.ze.hackathon.Hackathon2018.DBConnectionHelper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -26,13 +28,24 @@ import static com.mongodb.client.model.Sorts.orderBy;
 @Service
 public class DataService {
 
-  MongoDatabase database;
-
+  private MongoDatabase database;
 
   public MongoDatabase initConnection() {
     if(database == null) {
       database = DBConnectionHelper.getConnection();
     }
     return database;
+  }
+
+  public String getWeather() {
+    initConnection();
+
+    List<String> returnList = Lists.newArrayList();
+    final MongoCollection stationCollection = database.getCollection("stations");
+    MongoCursor<Document> cursor = stationCollection.find().iterator();
+    while (cursor.hasNext()) {
+      returnList.add(cursor.next().toJson());
+    }
+    return String.join(",", returnList);
   }
 }
