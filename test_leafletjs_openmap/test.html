@@ -16,6 +16,7 @@
       }
     </style>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA==" crossorigin=""/>
+	<script src="javascripts/heatmap.js"></script>
     <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"
      integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA=="
      crossorigin=""></script>
@@ -23,6 +24,7 @@
     <script src="javascripts/leaflet.timeline.js"></script>
     <link rel="stylesheet" type="text/css" href="css/leaflet-openweathermap.css" />
     <script type="text/javascript" src="javascripts/leaflet-openweathermap.js"></script>
+	<script src="javascripts/leaflet-heatmap.js"></script>
   </head>
   <body>
     <div id="mapid"></div>
@@ -63,7 +65,13 @@
   /* To add new layers, create a layerGroup as follows*/
   /*sample layer groups*/
   var cities = L.layerGroup();
-  L.marker([49.2827, -123.1207]).bindPopup('hi').addTo(cities);
+  L.marker([49.056801, -122.285042]).bindPopup('Abbotsford, Popluation ~141,397').addTo(cities);
+  L.marker([49.2488, -122.9805]).bindPopup('Burnaby, Population ~232,755').addTo(cities);
+  L.marker([49.2628, -122.7811]).bindPopup('Coquitlam, Population ~139,284').addTo(cities);
+  L.marker([49.0952, -123.0265]).bindPopup('Delta, Population ~102,238').addTo(cities);
+  L.marker([49.2827, -123.1207]).bindPopup('Vancouver, Population ~631,486').addTo(cities);
+  L.marker([49.166592, -123.133568]).bindPopup('Richmond, Population ~198309').addTo(cities);
+  L.marker([49.1913, -122.8490]).bindPopup('Surrey, Population ~517,887').addTo(cities);
 
   var geoJson = L.geoJSON(vanData,{style: style});
   
@@ -85,6 +93,34 @@
 
   /*End of sample layergroup */
   
+  /*Some hardcoded testing data for heatmap*/
+   var testData = {
+   max: 10,
+   data: [{lat: 49.056801, lng: -122.285042, count: 141397},{lat: 49.2488, lng: -122.9805, count: 232755},{lat: 49.2628, lng: -122.7811, count: 139284},
+   {lat: 49.0952, lng: -123.0265, count: 102238},{lat: 49.2827, lng: -123.1207, count: 631486},{lat: 49.166592, lng: -123.133568, count: 198309}, {lat: 49.1913, lng: -122.8490, count: 517887}]
+   };
+
+  var cfg = {
+  // radius should be small ONLY if scaleRadius is true (or small radius is intended)
+  // if scaleRadius is false it will be the constant radius used in pixels
+  "radius": 0.1,
+  "maxOpacity": .5, 
+  // scales the radius based on map zoom
+  "scaleRadius": true, 
+  // if set to false the heatmap uses the global maximum for colorization
+  // if activated: uses the data maximum within the current map boundaries 
+  //   (there will always be a red spot with useLocalExtremas true)
+  "useLocalExtrema": true,
+  // which field name in your data represents the latitude - default "lat"
+  latField: 'lat',
+  // which field name in your data represents the longitude - default "lng"
+  lngField: 'lng',
+  // which field name in your data represents the data value - default "value"
+  valueField: 'count'
+  };
+
+  var heatmapLayer = new HeatmapOverlay(cfg);
+  
   /*Adding the layerGroup here allows the user to control what shows up on the overlay*/
   var overlays = {
     "Cities": cities,
@@ -96,7 +132,8 @@
     "Rain": rain,
     "Pressure": pressurecntr,
     "Temperature": temp,
-    "Wind": wind
+    "Wind": wind,
+	"Heatmap" : heatmapLayer
   };
   
   // add more layers here
@@ -119,7 +156,7 @@
   var mapConfig = {
     center: [49.2827, -123.1207],
     zoom: 10,
-    layers: [baseLayer,timeline]
+    layers: [baseLayer,timeline,heatmapLayer]
   };
 
   var mymap = L.map('mapid', mapConfig);
@@ -142,6 +179,8 @@
   /*L.geoJSON(vancouverData).addTo(mymap);*/
   //console.log(vancouverData);
   L.control.layers(baseLayers,overlays).addTo(mymap);
+
+  heatmapLayer.setData(testData);
 
     </script>
   </body>
