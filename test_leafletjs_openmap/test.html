@@ -23,6 +23,7 @@
     <script src="javascripts/leaflet.timeline.js"></script>
     <link rel="stylesheet" type="text/css" href="css/leaflet-openweathermap.css" />
     <script type="text/javascript" src="javascripts/leaflet-openweathermap.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.8/d3.min.js"></script>
   </head>
   <body>
     <div id="mapid"></div>
@@ -33,7 +34,7 @@
   var mAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>';
   var mUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}';
   var _OWM_DEFAULT_CONFIG = {opacity: 0.5, appId: '17556070bfb60252ba8bcd48fc9408d5'};
-  
+
   function getColor(cartodb_id) {
     return cartodb_id % 2 == 0 ? '#800026' : '#BD0026';
   }
@@ -60,6 +61,7 @@
       fillColor: getColor(feature.properties.cartodb_id)
     };
   }
+  
   /* To add new layers, create a layerGroup as follows*/
   /*sample layer groups*/
   var cities = L.layerGroup();
@@ -85,20 +87,8 @@
 
   /*End of sample layergroup */
   
-  /*Adding the layerGroup here allows the user to control what shows up on the overlay*/
-  var overlays = {
-    "Cities": cities,
-    "Geo": geoJson,
-    "Timeline":timeline,
-    "Lakes": lakeJson,
-    "Clouds": clouds,
-    "Precipitation": precipitation,
-    "Rain": rain,
-    "Pressure": pressurecntr,
-    "Temperature": temp,
-    "Wind": wind
-  };
-  
+ 
+
   // add more layers here
   var baseLayer = L.tileLayer(mUrl, {
     attribution: mAttr,
@@ -110,20 +100,17 @@
   var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 18, attribution: '[wah!]' });
 
-
-//  var city = L.OWM.current({intervall: 15, lang: 'de',
-  //      markerFunction: myOwmMarker, popupFunction: myOwmPopup});
-  //var openWeatherLayer = L
-
-  
   var mapConfig = {
     center: [49.2827, -123.1207],
     zoom: 10,
     layers: [baseLayer,timeline]
   };
 
+
   var mymap = L.map('mapid', mapConfig);
 
+  /*
+  // might not use timeline given time constaints
   var timelineControl = L.timelineSliderControl({
     formatOutput: function(date){
       return moment(date).format("YYYY-MM-DD");
@@ -133,7 +120,68 @@
 
   timelineControl.addTo(mymap);
   timelineControl.addTimelines(timeline);
+  */
 
+  var myStyle = {
+      "color": "#ff7800",
+      "weight": 5,
+      "opacity": 0.65
+  };
+
+  function mapDraw(csv, map, nearest){
+    var pointdata = csv;
+
+    var svg = d3.select("#mymap").select("svg");
+    var g = svg.append("g").attr("class", "leaflet-zoom-hide");
+
+
+    //ボロノイジェネレーター
+    var voronoi = d3.geom.voronoi()
+      .x(function(d) { return d.x; })
+      .y(function(d) { return d.y; });
+     update();
+   
+      
+    function update() {
+      var positions = [];
+      pointdata.forEach(function(d) {        
+        var latlng = new L.LatLng(d.latitude, d.longitude);
+        /*
+        positions.push({
+          x :map.latLngToLayerPoint(latlng).x,
+          y :map.latLngToLayerPoint(latlng).y
+        });*/
+        positions.push({x:d.latitude, y:d.longitude});
+      });
+      
+      
+      var polygons = voronoi(positions);
+      polygons.forEach(function(v) { L.polygon(v, myStyle).addTo(nearest);});
+    }
+  }
+  
+    /*Adding the layerGroup here allows the user to control what shows up on the overlay*/
+    
+  var nearest = L.layerGroup();
+  var overlays = {
+    "Cities": cities,
+    "Geo": geoJson,
+    "Timeline":timeline,
+    "Lakes": lakeJson,
+    "Clouds": clouds,
+    "Precipitation": precipitation,
+    "Rain": rain,
+    "Pressure": pressurecntr,
+    "Temperature": temp,
+    "Wind": wind,
+    "Nearest Neighbour": nearest
+  };
+
+  d3.csv('supermarkets.csv', function(csv){
+    mapDraw(csv, mymap, nearest);
+  });
+
+  
   var baseLayers = {
     "Grey Basic": baseLayer,
     "OSM Basic": osm
