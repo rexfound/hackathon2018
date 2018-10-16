@@ -23,7 +23,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js"></script>
     <script src="js/leaflet.timeline.js"></script>
     <link rel="stylesheet" type="text/css" href="css/leaflet-openweathermap.css" />
-    <script type="text/javascript" src="js/leaflet-openweathermap.js"></script>
+    <script type="text/javascript" src="./js/leaflet-openweathermap.js"></script>
 	<script src="js/leaflet-heatmap.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.8/d3.min.js"></script>
   </head>
@@ -142,18 +142,6 @@
 
   var mymap = L.map('mapid', mapConfig);
 
-  /*
-  // might not use timeline given time constaints
-  var timelineControl = L.timelineSliderControl({
-    formatOutput: function(date){
-      return moment(date).format("YYYY-MM-DD");
-    },
-    enableKeyboardControls: true
-  });
-
-  timelineControl.addTo(mymap);
-  timelineControl.addTimelines(timeline);
-  */
 
   var myStyle = {
       "color": "#ff7800",
@@ -161,41 +149,99 @@
       "opacity": 0.65
   };
 
-  function mapDraw(csv, map, nearest){
+  function mapDraw(csv, map, nearest, nearestWind){
     var pointdata = csv;
 
     var svg = d3.select("#mymap").select("svg");
     var g = svg.append("g").attr("class", "leaflet-zoom-hide");
 
 
-    //ボロノイジェネレーター
     var voronoi = d3.geom.voronoi()
       .x(function(d) { return d.x; })
       .y(function(d) { return d.y; });
      update();
-   
+
+	function getScaleColor(value, tempLookUp) {
+		return tempLookUp[-1 * parseInt((value - 45)/5)];
+	}
+	 
+	function getComputedColor(value, max, min) {
+	  var mid = (max - min)/2;
+	  var diffMid = max - mid;
+	  
+	  var red = 0;
+	  var blue = 0;
+	  
+	  var ratio = (max - value) / diffMid;
+	  red = parseInt(256 * (1-ratio));
       
+	  var ratio = (value - min) / diffMid;
+	  blue = parseInt(256 * (1-ratio));
+	  
+	  return "rgb(" + red + "," + "20," + blue + ")";
+	}
+	
+	function voronoiStyle(array) {
+	   return {
+		 "weight": 0.5,
+		 "opacity": 0.8,
+		 "fillOpacity" :0.3,
+		 "color": array.point.TEMP_COLOR
+	   }
+	 };
+	 
+	function voronoiStyleWind(array) {
+	   return {
+		 "weight": 0.3,
+		 "opacity": 0.8,
+		 "color": array.point.WIND_COLOR
+	   }
+	 };
+	
+	
     function update() {
       var positions = [];
-      pointdata.forEach(function(d) {        
-        var latlng = new L.LatLng(d.latitude, d.longitude);
-        /*
-        positions.push({
-          x :map.latLngToLayerPoint(latlng).x,
-          y :map.latLngToLayerPoint(latlng).y
-        });*/
-        positions.push({x:d.latitude, y:d.longitude});
+	  
+	  var maxTemp = -1;
+	  var minTemp = 999;
+	  var minWind = 999;
+	  var maxWind = -1;
+	  
+	  pointdata.forEach(function(d) {
+		var tempTemp = parseFloat(d.TEMP);
+		if (tempTemp > maxTemp) maxTemp = tempTemp;
+		if (tempTemp < minTemp) minTemp = tempTemp;
+		var tempWind = parseFloat(d.WIND_SPD);
+		if (tempWind > maxWind) maxWind = tempWind;
+		if (tempWind < minWind) minWind = tempWind;
+	  });
+	  
+	  
+
+	 
+		var tempLookUp = ['rgb(173,0,0)','rgb(220,0,0)','rgb(254,15,0)','rgb(254,71,0)','rgb(254,131,0)','rgb(254,187,0)','rgb(254,243,0)','rgb(211,254,43)','rgb(155,254,99)','rgb(95,253,159)','rgb(39,253,215)','rgb(0,233,254)','rgb(0,163,254)','rgb(0,89,254)','rgb(0,19,254)','rgb(0,0,220)','rgb(0,0,173)'];
+		console.log(tempLookUp);
+		
+	  
+      pointdata.forEach(function(d) {
+
+		if (d.LAT != null && d.LON != null && d.TEMP < 200) {
+			positions.push({x:d.LAT, y:d.LON, TEMP:d.TEMP, WIND_SPD:d.WIND_SPD, TEMP_COLOR:getScaleColor(d.TEMP, tempLookUp), WIND_COLOR:getComputedColor(d.WIND_SPD,minWind,maxWind)});
+		}
       });
       
-      
+      console.log(positions);
       var polygons = voronoi(positions);
-      polygons.forEach(function(v) { L.polygon(v, myStyle).addTo(nearest);});
+      polygons.forEach(function(v) { L.polygon(v, voronoiStyle(v)).bindPopup("Temperature: " + v.point.TEMP).addTo(nearest);});
+      polygons.forEach(function(v) { L.polygon(v, voronoiStyleWind(v)).addTo(nearestWind);});
     }
   }
   
     /*Adding the layerGroup here allows the user to control what shows up on the overlay*/
     
-  var nearest = L.layerGroup();
+  var nearestTemp = L.layerGroup();
+  var nearestWind = L.layerGroup();
+  
   var overlays = {
     "Cities": cities,
     "Geo": geoJson,
@@ -208,11 +254,13 @@
     "Temperature": temp,
     "Wind": wind,
     "Heatmap" : heatmapLayer,
-    "Nearest Neighbour": nearest
+    "Nearest Neighbour Temp": nearestTemp,
+	"Nearest Neighbour Wind": nearestWind
+	
   };
 
-  d3.csv('csv/supermarkets.csv', function(csv){
-    mapDraw(csv, mymap, nearest);
+  d3.json('/api/getWeatherData', function(json){
+    mapDraw(json, mymap, nearestTemp, nearestWind);
   });
 
   

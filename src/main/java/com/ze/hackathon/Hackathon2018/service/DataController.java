@@ -21,7 +21,7 @@ public class DataController {
   @GetMapping("/api/getWeatherData")
   public ResponseEntity getBalance(){
     String result = dataService.getWeather();
-    return ResponseEntity.ok(result);
+    return ResponseEntity.ok("[" + result + "]");
   }
 
 }
