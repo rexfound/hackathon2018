@@ -133,14 +133,21 @@
     id: 'mapbox.light',
     accessToken: 'pk.eyJ1IjoiemVoYWNrcyIsImEiOiJjam42bjh2OGIwbDFzM3dwaTh3N3NtNWRqIn0.yapaCg5pOEkYkPiskIszyQ'
   });
+
+  var darkLayer = L.tileLayer(mUrl, {
+    attribution: mAttr,
+    maxZoom: 14,
+    id: 'mapbox.dark',
+    accessToken: 'pk.eyJ1IjoiemVoYWNrcyIsImEiOiJjam42bjh2OGIwbDFzM3dwaTh3N3NtNWRqIn0.yapaCg5pOEkYkPiskIszyQ'
+  });
   
   var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 18, attribution: '[wah!]' });
+    maxZoom: 18, attribution: '[Map provided by OSM]' });
 
   var mapConfig = {
     center: [49.2827, -123.1207],
     zoom: 10,
-    layers: [baseLayer,timeline]
+    layers: [baseLayer]
   };
 
 
@@ -250,7 +257,6 @@
   var overlays = {
     "Cities": cities,
     "Geo": geoJson,
-    "Timeline":timeline,
     "Lakes": lakeJson,
     "Clouds": clouds,
     "Rain": rain,
@@ -283,6 +289,7 @@
   
   var baseLayers = {
     "Grey Basic": baseLayer,
+    "Dark theme": darkLayer,
     "OSM Basic": osm
   };
 
